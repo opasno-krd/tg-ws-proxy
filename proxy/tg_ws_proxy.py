@@ -318,10 +318,13 @@ async def _handle_client(reader, writer, secret: bytes):
         ctx = _build_crypto_ctx(client_dec_prekey_iv, secret, relay_init)
 
         media_tag = " media" if is_media else ""
-        ws = await ws_pool.get(dc, is_media, is_test_dc=is_test_dc)
+        ws = None
+        if not is_media:
+            ws = await ws_pool.get(dc, is_media, is_test_dc=is_test_dc)
         if ws is None:
-            log.info("[%s] DC%d%s WS pool unavailable -> fallback",
-                     label, dc, media_tag)
+            log.info("[%s] DC%d%s %s -> fallback",
+                     label, dc, media_tag,
+                     "media routed to worker" if is_media else "WS pool unavailable")
             splitter_fb = None
             try:
                 splitter_fb = MsgSplitter(proto_int)
