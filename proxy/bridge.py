@@ -230,7 +230,7 @@ async def _cfproxy_worker_fallback(reader, writer, relay_init, label,
     await ws.send(relay_init)
     await bridge_ws_reencrypt(reader, writer, ws, label, ctx,
                               dc=dc, is_media=is_media,
-                              splitter=None)
+                              splitter=splitter)
     return True
 
 
