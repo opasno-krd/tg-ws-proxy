@@ -318,13 +318,11 @@ async def _handle_client(reader, writer, secret: bytes):
         ctx = _build_crypto_ctx(client_dec_prekey_iv, secret, relay_init)
 
         media_tag = " media" if is_media else ""
-        ws = None
-        if not is_media:
-            ws = await ws_pool.get(dc, is_media, is_test_dc=is_test_dc)
+    
+        ws = await ws_pool.get(dc, is_media, is_test_dc=is_test_dc)
         if ws is None:
-            log.info("[%s] DC%d%s %s -> fallback",
-                     label, dc, media_tag,
-                     "media to worker" if is_media else "WS pool unavailable")
+            log.info("[%s] DC%d%s WS pool unavailable -> fallback",
+                     label, dc, media_tag)
             splitter_fb = None
             try:
                 splitter_fb = MsgSplitter(proto_int)
@@ -400,7 +398,7 @@ async def _run(stop_event: Optional[asyncio.Event] = None):
     user_cf_domains = proxy_config.cfproxy_user_domains
     if user_cf_domains:
         balancer.update_domains_list(user_cf_domains)
-    else:
+    elif proxy_config.fallback_cfproxy:
         start_cfproxy_domain_refresh()
 
     secret_bytes = bytes.fromhex(proxy_config.secret)
