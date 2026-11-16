@@ -193,16 +193,17 @@ async def _cfproxy_worker_fallback(reader, writer, relay_init, label,
     if not worker_domains:
         return False
 
-    pooled = None if is_test_dc else await cf_worker_pool.get(
+    pooled = None if (is_test_dc or is_media) else await cf_worker_pool.get(
         dc, fallback_dst, worker_domains)
     if pooled:
         ws, worker_domain = pooled
         log.info("[%s] DC%d%s -> CF worker pool hit via %s for %s",
                  label, dc, media_tag, worker_domain, fallback_dst)
     else:
+        dc_param = f"{dc}m" if is_media else str(dc)
         query = urlencode({
             'dst': fallback_dst,
-            'dc': str(dc),
+            'dc': dc_param,
         })
         path = f'/apiws?{query}'
 
