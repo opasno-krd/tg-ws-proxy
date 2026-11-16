@@ -27,7 +27,7 @@ class _WsPool:
         self._rotating: Dict[Tuple[int, bool, bool], asyncio.Task] = {}
         self._refill_failures: Dict[Tuple[int, bool, bool], int] = {}
         self._refill_after: Dict[Tuple[int, bool, bool], float] = {}
-        self.try_fronting_first = False
+        self.try_fronting_first = True
 
     async def get(self, dc: int, is_media: bool, *, is_test_dc: bool = False
                   ) -> Optional[RawWebSocket]:
@@ -223,7 +223,7 @@ class _WsPool:
         self._rotating.clear()
         self._refill_failures.clear()
         self._refill_after.clear()
-        self.try_fronting_first = False
+        self.try_fronting_first = True
 
     async def close(self):
         tasks = list(self._rotating.values()) + list(self._refilling.values())
