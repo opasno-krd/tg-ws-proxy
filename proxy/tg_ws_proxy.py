@@ -324,7 +324,7 @@ async def _handle_client(reader, writer, secret: bytes):
         if ws is None:
             log.info("[%s] DC%d%s %s -> fallback",
                      label, dc, media_tag,
-                     "media routed to worker" if is_media else "WS pool unavailable")
+                     "media to worker" if is_media else "WS pool unavailable")
             splitter_fb = None
             try:
                 splitter_fb = MsgSplitter(proto_int)
